@@ -16,3 +16,15 @@ def get_symbol_list(df):
 def get_name_list(df):
     name_list = [name.lower() for name in df['Name'].tolist()]
     return name_list
+
+def get_ticker_and_name(df):
+    symbol_name_dict = {}
+    for index, row in df.iterrows():
+        symbol = str(row['Symbol']).upper() if not pd.isna(row['Symbol']) else ''
+        name = row['Name'].lower()
+
+        # Only add to the dictionary if symbol is not empty
+        if symbol:
+            symbol_name_dict[name] = symbol
+
+    return symbol_name_dict
