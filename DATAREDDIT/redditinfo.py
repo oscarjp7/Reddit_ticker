@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 import os
 import praw
-from DATACONTEXT.findticker import find_tickers_with_context
+from DATACONTEXT.findticker import find_tickers_with_context, find_tickers
 
 not_stocks=['IT','FOR','ON','YOU','SO','BE','UP','GOOD','ARE','DAY','OR','ALL','CAN','ME','DO','BY','GO','OUT',
               'AS','BACK','OPEN','SEE','PUMP','NOW','BIG','HAS','NEXT','EOD','AN','AM','CASH','PLAY','HEAR','SAY',
@@ -21,26 +21,32 @@ def reddit_init():
     )
     return reddit
 
-def wsb_daily_comms(reddit, symbol_list, count):
+def wsb_daily_comms(reddit, count):
     com_dict = {}
     data =[]
     subreddit = reddit.subreddit('wallstreetbets')
-    submission = next(subreddit.hot(limit = 1))
-    submission.comments.replace_more(limit=count)
+    submissions = subreddit.hot(limit = 3)
+    submission = None
+    for sub in submissions:
+        if 'Daily Discussion' in sub.title:
+            print(sub.title)
+            submission = sub
+            break
+    if submission:
+        submission.comments.replace_more(limit=count)
 
-    for comment in submission.comments.list():
-        if isinstance(comment, praw.models.MoreComments):
-            continue
-        data.extend(comment.body.split())
+        for comment in submission.comments.list():
+            if isinstance(comment, praw.models.MoreComments):
+                continue
+            data.extend(find_tickers_with_context(comment.body))
 
-    for word in data:
-            if word.upper() in symbol_list and len(word)>1:
+        for word in data:
                     if word.upper() in com_dict:
                         com_dict[word.upper()] += 1
                     else:
                         com_dict[word.upper()] = 1
 
-    return dict(sorted(com_dict.items(), key = lambda item:item[1]))
+        return dict(sorted(com_dict.items(), key = lambda item:item[1]))
 
 def title_post_ticker(reddit, sub_list, symbol_list, post_count):
     word_dict ={}
@@ -51,9 +57,9 @@ def title_post_ticker(reddit, sub_list, symbol_list, post_count):
         data = []
         for submission in submissions:
             if submission.title:
-                data.extend(find_tickers_with_context(submission.title))
+                data.extend(find_tickers(submission.title))
             if submission.selftext:
-                data.extend(find_tickers_with_context(submission.selftext))
+                data.extend(find_tickers(submission.selftext))
             # data.extend(submission.title.split())
             # data.extend(submission.selftext.split())
 

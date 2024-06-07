@@ -1,11 +1,11 @@
 import spacy
-from DATAPREP.loaddata import get_ticker_and_name, get_nasdaq, get_symbol_list
+from DATAPREP.loaddata import get_ticker_and_name, get_nasdaq, get_symbol_list_mc
 
 nlp=spacy.load("en_core_web_sm")
 
 df = get_nasdaq()
 ticker_dict = get_ticker_and_name(df)
-symbol_list = get_symbol_list(df)
+symbol_list = get_symbol_list_mc(df)
 context_keywords = ['stock', 'price', 'buy', 'sell', 'market', 'shares']
 
 not_stocks=['IT','FOR','ON','YOU','SO','BE','UP','GOOD','ARE','DAY','OR','ALL','CAN','ME','DO','BY','GO','OUT',
@@ -15,7 +15,7 @@ not_stocks=['IT','FOR','ON','YOU','SO','BE','UP','GOOD','ARE','DAY','OR','ALL','
               'COP','ELSE','SPOT','MIN','COST','TECH','GROW','VERY','REAL','WELL','PAY','FREE','LOAN','BEST','NOTE',
               'FUND','MIND','RUN','ADD','WAVE','MOVE','TRUE','BIT','MAIN','KIND','FIVE','GAIN','VS','GUT','EU',
               'UK','PRE',' UPS','SELF','PPL','FATS','KEY','FOUR','TALK','MATH','EDIT','LAND','RENT','VIEW','KIDS',
-              'CAR','HI','VIEW','MAX','LOT','TOWN','UNIT']
+              'CAR','HI','VIEW','MAX','LOT','TOWN','UNIT','TREE','JOB','BOOM','BEAT','APPS']
 
 def find_tickers(text):
     tickers = []
@@ -44,3 +44,5 @@ def find_tickers_with_context(text):
     for sentence in sentences:
         tickers.extend(find_tickers(sentence))
     return tickers
+
+
