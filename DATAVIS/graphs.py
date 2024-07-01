@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 
-def barplot(data):
+def bar_plot(data):
     ticker = (data.keys())
+    print(ticker)
     count = (data.values())
     plt.figure(figsize =(12,6))
     plt.bar(ticker, count)
